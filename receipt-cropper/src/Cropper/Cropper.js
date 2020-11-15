@@ -20,18 +20,7 @@ export class Cropper extends Component {
         canvas.width = width;
         canvas.height = height;
 
-      console.log(width, height);
-      
-    //   ctx.fillStyle = "#000000";
-    //   ctx.rect(5, 5, 500, 500);
-    //   ctx.fill()
       ctx.drawImage(image, 0, 0, this.width, this.height, 0, 0, width, height);
-      ctx.strokeStyle = "#99ff33";
-      ctx.lineWidth = 5;
-      ctx.beginPath();
-      ctx.rect(2, 2, width - 5, height - 5);
-      
-      ctx.stroke();
     };
     image.src = this.props.src;
   };
@@ -58,6 +47,7 @@ export class Cropper extends Component {
         {this.props.src ? (
           <Backdrop>
             <div className="crop-box">
+                <span>aaa</span>
               <canvas
                 onClick={this.getCoordinates}
                 draggable="false"

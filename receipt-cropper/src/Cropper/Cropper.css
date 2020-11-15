@@ -14,3 +14,6 @@
   /* width: 500px;
   height: 500px; */
 }
+.crop-box span {
+    background-color:blue;
+  }
