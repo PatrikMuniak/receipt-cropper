@@ -1,10 +1,16 @@
 .crop-box {
-    width: 500px;
-    height: 500px;
-    position: fixed;
-    margin: 0 auto 0 auto;
-    z-index: 5;
-    background-color: white;
-    left: 30%;
-    transform: translate(0, 10%);
+  width: 80vw;
+  height: 80vh;
+  position: fixed;
+  margin: 0 auto 0 auto;
+  z-index: 5;
+  background-color: white;
+  left: 7%;
+  transform: translate(0, 10%);
+}
+
+.crop-box canvas {
+  margin: 0 auto 0 20vw;
+  /* width: 500px;
+  height: 500px; */
 }
