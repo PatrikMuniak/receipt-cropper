@@ -29,7 +29,6 @@
 
 .focus-box {
   position: absolute;
-  
   background-color: rgb(255,0,0,0.3);
   z-index: 6;
 }

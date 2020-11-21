@@ -41,28 +41,7 @@ export class Cropper extends Component {
     }
   };
   setFocusPoints = (width, height) => {
-    // const domCanv = this.canvasRef.getBoundingClientRect()
-    // console.log("hit");
-    // const pointNE = document.querySelector(".point-ne");
-    // const pointNW = document.querySelector(".point-nw");
-    // const pointSE = document.querySelector(".point-se");
-    // const pointSW = document.querySelector(".point-sw");
     const focusBox = document.querySelector(".focus-box");
-
-
-    // pointNE.style.left = "20vw";
-
-    // pointNW.style.left =
-    //   window.innerWidth * 0.2 + width - pointNW.offsetWidth + "px";
-
-    // pointSE.style.left = "20vw";
-    // pointSE.style.top = height - pointSE.offsetWidth + "px";
-
-    // pointSW.style.top = height - pointSW.offsetHeight + "px";
-    // pointSW.style.left =
-    //   window.innerWidth * 0.2 + width - pointSW.offsetWidth + "px";
-
-
       focusBox.style.width= width+'px';
       focusBox.style.height = height+'px';
       focusBox.style.left = '20vw'
@@ -115,7 +94,6 @@ export class Cropper extends Component {
   resizeCropBox = (event)=>{
     event.preventDefault()
     event.stopPropagation()
-    console.log('resize')
     const focusPoint = event.target;
     const focusBox = document.querySelector('.focus-box')
     let pressing = true;
@@ -135,10 +113,52 @@ export class Cropper extends Component {
         deltaPosY = event.clientY - posY
         posX = event.clientX 
         posY = event.clientY
-        console.log(focusBox.style.width)
 
-        focusBox.style.width = focusBox.offsetWidth + deltaPosX + "px";
-        focusBox.style.height = focusBox.offsetHeight + deltaPosY + "px";
+        const canvasWidth = this.canvasRef.current.offsetWidth
+        const canvasHeight = this.canvasRef.current.offsetHeight
+        const canvasOffsetLeft = this.canvasRef.current.offsetLeft
+        const canvasOffsetTop = this.canvasRef.current.offsetTop
+
+        switch(focusPoint.classList[1]){
+          case 'point-ne':
+            // console.log(this.canvasRef.current.offsetWidth)
+            
+            focusBox.style.width =  focusBox.offsetWidth - deltaPosX > canvasWidth ? canvasWidth : focusBox.offsetWidth - deltaPosX + "px"
+            focusBox.style.height =  focusBox.offsetHeight - deltaPosY > canvasHeight ? canvasHeight : focusBox.offsetHeight - deltaPosY + "px"
+            // console.log(canvasOffsetLeft > focusBox.offsetLeft + deltaPosX)
+
+            focusBox.style.left = (canvasOffsetLeft > focusBox.offsetLeft + deltaPosX) || (focusBox.offsetLeft + deltaPosX > canvasOffsetLeft + canvasWidth) ? canvasOffsetLeft : focusBox.offsetLeft + deltaPosX + "px";
+
+            focusBox.style.top = (canvasOffsetTop > focusBox.offsetTop + deltaPosY) || (canvasOffsetTop + canvasHeight < focusBox.offsetTop + deltaPosY)? canvasOffsetTop +canvasHeight : focusBox.offsetTop + deltaPosY + "px";
+            break;
+
+          case 'point-se':
+            focusBox.style.width = focusBox.offsetWidth - deltaPosX > canvasWidth ? canvasWidth : focusBox.offsetWidth - deltaPosX + "px";
+            focusBox.style.height = focusBox.offsetHeight + deltaPosY > canvasHeight ? canvasHeight : focusBox.offsetHeight + deltaPosY + "px";
+            focusBox.style.left = (canvasOffsetLeft > focusBox.offsetLeft + deltaPosX) || (focusBox.offsetLeft + deltaPosX > canvasOffsetLeft + canvasWidth) ? canvasOffsetLeft : focusBox.offsetLeft + deltaPosX + "px";
+            
+            break;
+
+          case 'point-nw':
+            focusBox.style.width =  focusBox.offsetWidth + deltaPosX > canvasWidth ? canvasWidth : focusBox.offsetWidth + deltaPosX + "px"
+            focusBox.style.height =  focusBox.offsetHeight - deltaPosY > canvasHeight ? canvasHeight : focusBox.offsetHeight - deltaPosY + "px"
+            focusBox.style.top = canvasOffsetTop > focusBox.offsetTop + deltaPosY ? canvasOffsetTop : focusBox.offsetTop + deltaPosY + "px";
+
+
+
+          break;
+
+          case 'point-sw':
+
+            focusBox.style.width =  focusBox.offsetWidth + deltaPosX > canvasWidth ? canvasWidth : focusBox.offsetWidth + deltaPosX + "px"
+            focusBox.style.height =  focusBox.offsetHeight + deltaPosY > canvasHeight ? canvasHeight : focusBox.offsetHeight + deltaPosY + "px" 
+          break;
+          default:
+            throw 'Focus point not recognised.'
+
+        }
+  
+        
         
       }
     });
