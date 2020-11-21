@@ -57,11 +57,9 @@ export class Cropper extends Component {
     // x: 193.84375
     // y: 45.759376525878906
     const coordinate = { x: x - domRect.x, y: y - domRect.y };
-    // console.log("coordinates ", coordinate.x, coordinate.y);
   };
 
   dragCropBox = (event) => {
-    console.log("drag");
     const focusBox = document.querySelector(".focus-box");
     let pressing = true;
     let posX = event.clientX;
@@ -80,8 +78,7 @@ export class Cropper extends Component {
         deltaPosY = event.clientY - posY;
         posX = event.clientX;
         posY = event.clientY;
-        // console.log(focusBox.offsetLeft, focusBox.offsetTop)
-        // focusBox.style.top = focusBox.offsetTop + deltaPosY + "px";
+
         const canvasWidth = this.canvasRef.current.offsetWidth;
         const canvasHeight = this.canvasRef.current.offsetHeight;
         const canvasOffsetLeft = this.canvasRef.current.offsetLeft;
@@ -100,7 +97,6 @@ export class Cropper extends Component {
             focusBox.offsetLeft + focusBox.offsetWidth + deltaPosX
             ? canvasOffsetLeft + canvasWidth
             : focusBox.offsetLeft + deltaPosX + "px";
-        // focusBox.style.left = focusBox.offsetLeft + deltaPosX + "px";
       }
     });
   };
@@ -135,8 +131,6 @@ export class Cropper extends Component {
 
         switch (focusPoint.classList[1]) {
           case "point-ne":
-            // console.log(this.canvasRef.current.offsetWidth)
-
             focusBox.style.width =
               focusBox.offsetWidth - deltaPosX > canvasWidth
                 ? canvasWidth
@@ -145,7 +139,6 @@ export class Cropper extends Component {
               focusBox.offsetHeight - deltaPosY > canvasHeight
                 ? canvasHeight
                 : focusBox.offsetHeight - deltaPosY + "px";
-            // console.log(canvasOffsetLeft > focusBox.offsetLeft + deltaPosX)
 
             focusBox.style.left =
               canvasOffsetLeft > focusBox.offsetLeft + deltaPosX ||
