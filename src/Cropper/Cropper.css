@@ -1,0 +1,58 @@
+.crop-box {
+  width: 80vw;
+  height: 80vh;
+  position: fixed;
+  margin: 0 auto 0 auto;
+  z-index: 5;
+  background-color: white;
+  left: 7%;
+  transform: translate(0, 10%);
+}
+
+.crop-box canvas {
+  margin: 0 auto 0 20vw;
+  /* width: 500px;
+  height: 500px; */
+}
+.crop-box button {
+    position: relative;
+    left: 50px
+  }
+
+.focus-point {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background-color: blueviolet;
+  cursor: pointer;
+}
+
+.focus-box {
+  position: absolute;
+  
+  background-color: rgb(255,0,0,0.3);
+  z-index: 6;
+}
+
+.point-ne {
+  position: absolute;
+
+}
+
+.point-nw {
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.point-sw {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+}
+
+.point-se {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+}
