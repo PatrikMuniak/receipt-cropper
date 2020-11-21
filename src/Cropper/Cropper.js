@@ -1,6 +1,10 @@
 import React, { Component, Fragment } from "react";
 import Backdrop from "../components/Backdrop/Backdrop";
 import "./Cropper.css";
+
+
+
+
 export class Cropper extends Component {
   state = {
     initialPos: { x: 0, y: 0 },
@@ -81,64 +85,100 @@ export class Cropper extends Component {
     // console.log("coordinates ", coordinate.x, coordinate.y);
   };
 
-  moveDiv = (event) => {
-    console.log(event.target.className);
-    const focusPoint = event.target;
+  dragCropBox = (event) => {
+    console.log('drag')
     const focusBox = document.querySelector('.focus-box')
-    // console.log(event.clientX)
-    const offsetY = event.clientY - focusPoint.parentNode.offsetTop;
-    // console
-    // let posX = event.clientX
-    const domRect = focusPoint.offsetParent.getBoundingClientRect();
     let pressing = true;
+    let posX = event.clientX
+    let posY = event.clientY
+    let deltaPosX 
+    let deltaPosY
+
     event.preventDefault();
     document.addEventListener("mouseup", () => {
       pressing = false;
     });
-
-    document.addEventListener("mousemove", function dragElement(event) {
+    
+    document.addEventListener("mousemove", (event)=>{
       if (pressing) {
-        focusBox.style.top = event.clientY - domRect.y + "px";
-        focusBox.style.left = event.clientX - domRect.x + "px";
+        deltaPosX = event.clientX - posX
+        deltaPosY = event.clientY - posY
+        posX = event.clientX 
+        posY = event.clientY
+        // console.log(focusBox.offsetLeft, focusBox.offsetTop)
+        focusBox.style.top = focusBox.offsetTop + deltaPosY + "px";
+        focusBox.style.left = focusBox.offsetLeft + deltaPosX + "px";
+      }
+    });
+  };
 
+  resizeCropBox = (event)=>{
+    event.preventDefault()
+    event.stopPropagation()
+    console.log('resize')
+    const focusPoint = event.target;
+    const focusBox = document.querySelector('.focus-box')
+    let pressing = true;
+    let posX = event.clientX
+    let posY = event.clientY
+    let deltaPosX 
+    let deltaPosY
+
+    event.preventDefault();
+    document.addEventListener("mouseup", () => {
+      pressing = false;
+    });
+    
+    document.addEventListener("mousemove", (event)=>{
+      if (pressing) {
+        deltaPosX = event.clientX - posX
+        deltaPosY = event.clientY - posY
+        posX = event.clientX 
+        posY = event.clientY
+        console.log(focusBox.style.width)
+
+        focusBox.style.width = focusBox.offsetWidth + deltaPosX + "px";
+        focusBox.style.height = focusBox.offsetHeight + deltaPosY + "px";
+        
       }
     });
 
-    // focusPoint.style.top = offsetY+'px'
+  }
 
-    // focusPoint.addEventListener('mouseup')
-  };
-  dragDiv;
+
+
 
   render() {
+
     return (
       <Fragment>
         {this.props.src ? (
           <Backdrop>
-            <div className="crop-box">
+            <div className="crop-box"
+            onMouseDown={(e)=>{this.dragCropBox(e)}}>
               <div className="focus-box">
                 <div
                   className="focus-point point-ne"
                   onMouseDown={(e) => {
-                    this.moveDiv(e);
+                    this.resizeCropBox(e);
                   }}
                 ></div>
                 <div
                   className="focus-point point-nw"
                   onMouseDown={(e) => {
-                    this.moveDiv(e);
+                    this.resizeCropBox(e);
                   }}
                 ></div>
                 <div
                   className="focus-point point-se"
                   onMouseDown={(e) => {
-                    this.moveDiv(e);
+                    this.resizeCropBox(e);
                   }}
                 ></div>
                 <div
                   className="focus-point point-sw"
                   onMouseDown={(e) => {
-                    this.moveDiv(e);
+                    this.resizeCropBox(e);
                   }}
                 ></div>
               </div>
