@@ -2,9 +2,6 @@ import React, { Component, Fragment } from "react";
 import Backdrop from "../components/Backdrop/Backdrop";
 import "./Cropper.css";
 
-
-
-
 export class Cropper extends Component {
   state = {
     initialPos: { x: 0, y: 0 },
@@ -42,10 +39,9 @@ export class Cropper extends Component {
   };
   setFocusPoints = (width, height) => {
     const focusBox = document.querySelector(".focus-box");
-      focusBox.style.width= width+'px';
-      focusBox.style.height = height+'px';
-      focusBox.style.left = '20vw'
-
+    focusBox.style.width = width + "px";
+    focusBox.style.height = height + "px";
+    focusBox.style.left = "20vw";
   };
   getCoordinates = (event) => {
     let x = event.clientX;
@@ -65,117 +61,167 @@ export class Cropper extends Component {
   };
 
   dragCropBox = (event) => {
-    console.log('drag')
-    const focusBox = document.querySelector('.focus-box')
+    console.log("drag");
+    const focusBox = document.querySelector(".focus-box");
     let pressing = true;
-    let posX = event.clientX
-    let posY = event.clientY
-    let deltaPosX 
-    let deltaPosY
+    let posX = event.clientX;
+    let posY = event.clientY;
+    let deltaPosX;
+    let deltaPosY;
 
     event.preventDefault();
     document.addEventListener("mouseup", () => {
       pressing = false;
     });
-    
-    document.addEventListener("mousemove", (event)=>{
+
+    document.addEventListener("mousemove", (event) => {
       if (pressing) {
-        deltaPosX = event.clientX - posX
-        deltaPosY = event.clientY - posY
-        posX = event.clientX 
-        posY = event.clientY
+        deltaPosX = event.clientX - posX;
+        deltaPosY = event.clientY - posY;
+        posX = event.clientX;
+        posY = event.clientY;
         // console.log(focusBox.offsetLeft, focusBox.offsetTop)
-        focusBox.style.top = focusBox.offsetTop + deltaPosY + "px";
-        focusBox.style.left = focusBox.offsetLeft + deltaPosX + "px";
+        // focusBox.style.top = focusBox.offsetTop + deltaPosY + "px";
+        const canvasWidth = this.canvasRef.current.offsetWidth;
+        const canvasHeight = this.canvasRef.current.offsetHeight;
+        const canvasOffsetLeft = this.canvasRef.current.offsetLeft;
+        const canvasOffsetTop = this.canvasRef.current.offsetTop;
+
+        focusBox.style.top =
+          canvasOffsetTop > focusBox.offsetTop + deltaPosY ||
+          canvasOffsetTop + canvasHeight <
+            focusBox.offsetTop + focusBox.offsetHeight + deltaPosY
+            ? canvasOffsetTop + canvasHeight
+            : focusBox.offsetTop + deltaPosY + "px";
+
+        focusBox.style.left =
+          canvasOffsetLeft > focusBox.offsetLeft + deltaPosX ||
+          canvasOffsetLeft + canvasWidth <
+            focusBox.offsetLeft + focusBox.offsetWidth + deltaPosX
+            ? canvasOffsetLeft + canvasWidth
+            : focusBox.offsetLeft + deltaPosX + "px";
+        // focusBox.style.left = focusBox.offsetLeft + deltaPosX + "px";
       }
     });
   };
 
-  resizeCropBox = (event)=>{
-    event.preventDefault()
-    event.stopPropagation()
+  resizeCropBox = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
     const focusPoint = event.target;
-    const focusBox = document.querySelector('.focus-box')
+    const focusBox = document.querySelector(".focus-box");
     let pressing = true;
-    let posX = event.clientX
-    let posY = event.clientY
-    let deltaPosX 
-    let deltaPosY
+    let posX = event.clientX;
+    let posY = event.clientY;
+    let deltaPosX;
+    let deltaPosY;
 
     event.preventDefault();
     document.addEventListener("mouseup", () => {
       pressing = false;
     });
-    
-    document.addEventListener("mousemove", (event)=>{
+
+    document.addEventListener("mousemove", (event) => {
       if (pressing) {
-        deltaPosX = event.clientX - posX
-        deltaPosY = event.clientY - posY
-        posX = event.clientX 
-        posY = event.clientY
+        deltaPosX = event.clientX - posX;
+        deltaPosY = event.clientY - posY;
+        posX = event.clientX;
+        posY = event.clientY;
 
-        const canvasWidth = this.canvasRef.current.offsetWidth
-        const canvasHeight = this.canvasRef.current.offsetHeight
-        const canvasOffsetLeft = this.canvasRef.current.offsetLeft
-        const canvasOffsetTop = this.canvasRef.current.offsetTop
+        const canvasWidth = this.canvasRef.current.offsetWidth;
+        const canvasHeight = this.canvasRef.current.offsetHeight;
+        const canvasOffsetLeft = this.canvasRef.current.offsetLeft;
+        const canvasOffsetTop = this.canvasRef.current.offsetTop;
 
-        switch(focusPoint.classList[1]){
-          case 'point-ne':
+        switch (focusPoint.classList[1]) {
+          case "point-ne":
             // console.log(this.canvasRef.current.offsetWidth)
-            
-            focusBox.style.width =  focusBox.offsetWidth - deltaPosX > canvasWidth ? canvasWidth : focusBox.offsetWidth - deltaPosX + "px"
-            focusBox.style.height =  focusBox.offsetHeight - deltaPosY > canvasHeight ? canvasHeight : focusBox.offsetHeight - deltaPosY + "px"
+
+            focusBox.style.width =
+              focusBox.offsetWidth - deltaPosX > canvasWidth
+                ? canvasWidth
+                : focusBox.offsetWidth - deltaPosX + "px";
+            focusBox.style.height =
+              focusBox.offsetHeight - deltaPosY > canvasHeight
+                ? canvasHeight
+                : focusBox.offsetHeight - deltaPosY + "px";
             // console.log(canvasOffsetLeft > focusBox.offsetLeft + deltaPosX)
 
-            focusBox.style.left = (canvasOffsetLeft > focusBox.offsetLeft + deltaPosX) || (focusBox.offsetLeft + deltaPosX > canvasOffsetLeft + canvasWidth) ? canvasOffsetLeft : focusBox.offsetLeft + deltaPosX + "px";
+            focusBox.style.left =
+              canvasOffsetLeft > focusBox.offsetLeft + deltaPosX ||
+              focusBox.offsetLeft + deltaPosX > canvasOffsetLeft + canvasWidth
+                ? canvasOffsetLeft
+                : focusBox.offsetLeft + deltaPosX + "px";
 
-            focusBox.style.top = (canvasOffsetTop > focusBox.offsetTop + deltaPosY) || (canvasOffsetTop + canvasHeight < focusBox.offsetTop + deltaPosY)? canvasOffsetTop +canvasHeight : focusBox.offsetTop + deltaPosY + "px";
+            focusBox.style.top =
+              canvasOffsetTop > focusBox.offsetTop + deltaPosY ||
+              canvasOffsetTop + canvasHeight < focusBox.offsetTop + deltaPosY
+                ? canvasOffsetTop + canvasHeight
+                : focusBox.offsetTop + deltaPosY + "px";
             break;
 
-          case 'point-se':
-            focusBox.style.width = focusBox.offsetWidth - deltaPosX > canvasWidth ? canvasWidth : focusBox.offsetWidth - deltaPosX + "px";
-            focusBox.style.height = focusBox.offsetHeight + deltaPosY > canvasHeight ? canvasHeight : focusBox.offsetHeight + deltaPosY + "px";
-            focusBox.style.left = (canvasOffsetLeft > focusBox.offsetLeft + deltaPosX) || (focusBox.offsetLeft + deltaPosX > canvasOffsetLeft + canvasWidth) ? canvasOffsetLeft : focusBox.offsetLeft + deltaPosX + "px";
-            
+          case "point-se":
+            focusBox.style.width =
+              focusBox.offsetWidth - deltaPosX > canvasWidth
+                ? canvasWidth
+                : focusBox.offsetWidth - deltaPosX + "px";
+            focusBox.style.height =
+              focusBox.offsetHeight + deltaPosY > canvasHeight
+                ? canvasHeight
+                : focusBox.offsetHeight + deltaPosY + "px";
+            focusBox.style.left =
+              canvasOffsetLeft > focusBox.offsetLeft + deltaPosX ||
+              focusBox.offsetLeft + deltaPosX > canvasOffsetLeft + canvasWidth
+                ? canvasOffsetLeft
+                : focusBox.offsetLeft + deltaPosX + "px";
+
             break;
 
-          case 'point-nw':
-            focusBox.style.width =  focusBox.offsetWidth + deltaPosX > canvasWidth ? canvasWidth : focusBox.offsetWidth + deltaPosX + "px"
-            focusBox.style.height =  focusBox.offsetHeight - deltaPosY > canvasHeight ? canvasHeight : focusBox.offsetHeight - deltaPosY + "px"
-            focusBox.style.top = canvasOffsetTop > focusBox.offsetTop + deltaPosY ? canvasOffsetTop : focusBox.offsetTop + deltaPosY + "px";
+          case "point-nw":
+            focusBox.style.width =
+              focusBox.offsetWidth + deltaPosX > canvasWidth
+                ? canvasWidth
+                : focusBox.offsetWidth + deltaPosX + "px";
+            focusBox.style.height =
+              focusBox.offsetHeight - deltaPosY > canvasHeight
+                ? canvasHeight
+                : focusBox.offsetHeight - deltaPosY + "px";
+            focusBox.style.top =
+              canvasOffsetTop > focusBox.offsetTop + deltaPosY ||
+              canvasOffsetTop + canvasHeight < focusBox.offsetTop + deltaPosY
+                ? canvasOffsetTop + canvasHeight
+                : focusBox.offsetTop + deltaPosY + "px";
 
+            break;
 
-
-          break;
-
-          case 'point-sw':
-
-            focusBox.style.width =  focusBox.offsetWidth + deltaPosX > canvasWidth ? canvasWidth : focusBox.offsetWidth + deltaPosX + "px"
-            focusBox.style.height =  focusBox.offsetHeight + deltaPosY > canvasHeight ? canvasHeight : focusBox.offsetHeight + deltaPosY + "px" 
-          break;
+          case "point-sw":
+            focusBox.style.width =
+              focusBox.offsetWidth + deltaPosX > canvasWidth
+                ? canvasWidth
+                : focusBox.offsetWidth + deltaPosX + "px";
+            focusBox.style.height =
+              focusBox.offsetHeight + deltaPosY > canvasHeight
+                ? canvasHeight
+                : focusBox.offsetHeight + deltaPosY + "px";
+            break;
           default:
-            throw 'Focus point not recognised.'
-
+            throw "Focus point not recognised.";
         }
-  
-        
-        
       }
     });
-
-  }
-
-
-
+  };
 
   render() {
-
     return (
       <Fragment>
         {this.props.src ? (
           <Backdrop>
-            <div className="crop-box"
-            onMouseDown={(e)=>{this.dragCropBox(e)}}>
+            <div
+              className="crop-box"
+              onMouseDown={(e) => {
+                this.dragCropBox(e);
+              }}
+            >
               <div className="focus-box">
                 <div
                   className="focus-point point-ne"
