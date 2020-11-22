@@ -21,10 +21,12 @@
 
 .focus-point {
   position: absolute;
-  width: 20px;
-  height: 20px;
-  background-color: blueviolet;
+
+  width: 15px;
+  height: 15px;
+  background-color: purple;
   cursor: pointer;
+  /* border-radius: 50%; */
 }
 
 .focus-box {
@@ -35,23 +37,61 @@
 
 .point-ne {
   position: absolute;
+  top: -5px;
+  left: -5px;
 
 }
 
 .point-nw {
   position: absolute;
-  right: 0;
-  top: 0;
+  right: -5px;
+  top: -5px;
 }
 
 .point-sw {
   position: absolute;
-  right: 0;
-  bottom: 0;
+  right: -5px;
+  bottom: -5px;
 }
 
 .point-se {
   position: absolute;
-  left: 0;
-  bottom: 0;
+  left: -5px;
+  bottom: -5px;
+}
+
+
+.slider {
+  -webkit-appearance: none;
+  position: relative;
+  left:17vw;
+  width: 50%;
+  height: 15px;
+  background: #d3d3d3;
+  border-radius: 5px;
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+}
+
+.slider:hover {
+  opacity: 1;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 19px;
+  height: 19px;
+  border-radius: 50%;
+  background: #4CAF50;
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  width: 25px;
+  height: 25px;
+  background: #4CAF50;
+  cursor: pointer;
 }

@@ -4,7 +4,8 @@ import ReactDOM from "react-dom";
 
 class App extends Component {
   state = {
-    src: undefined,
+    src: undefined
+
   };
 
   fileHandler = (e) => {
@@ -24,6 +25,7 @@ class App extends Component {
     // React.findDOMNode(this.uploadRef).targe.value = null
   };
 
+
   render() {
     return (
       <div className="App">
@@ -35,6 +37,7 @@ class App extends Component {
           ref="upload"
           onChange={this.fileHandler.bind(this)}
         />
+
       </div>
     );
   }
