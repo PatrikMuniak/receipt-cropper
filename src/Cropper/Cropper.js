@@ -5,7 +5,7 @@ import "./Cropper.css";
 export class Cropper extends Component {
   state = {
     cropSpecs: { x: 0, y: 0, width: 0, height: 0 },
-    value: 50,
+    imgRotation: 0,
   };
   canvasRef = React.createRef();
 
@@ -16,6 +16,7 @@ export class Cropper extends Component {
       const canvas = this.canvasRef.current;
       const ctx = canvas.getContext("2d");
       const setFocusPoints = this.setFocusPoints;
+      const setState = this.setState.bind(this);
       const image = new Image();
       image.onload = function () {
         const width = this.width / 10;
@@ -34,6 +35,8 @@ export class Cropper extends Component {
           width,
           height
         );
+        const cropSpecs = { x: 0, y: 0, width: width, height: height };
+        setState({ cropSpecs: cropSpecs });
       };
       image.src = this.props.src;
     }
@@ -41,6 +44,8 @@ export class Cropper extends Component {
 
   setFocusPoints = (width, height) => {
     const focusBox = document.querySelector(".focus-box");
+
+    focusBox.style.top = "0px";
     focusBox.style.width = width + "px";
     focusBox.style.height = height + "px";
     focusBox.style.left = "20vw";
@@ -65,26 +70,39 @@ export class Cropper extends Component {
     event.preventDefault();
     const focusBox = document.querySelector(".focus-box");
     let pressing = true;
-    let posX = event.clientX;
-    let posY = event.clientY;
+    let posX =
+      event.clientX !== undefined ? event.clientX : event.touches[0].clientX;
+    let posY =
+      event.clientY !== undefined ? event.clientY : event.touches[0].clientY;
     let deltaPosX;
     let deltaPosY;
+    const canvasWidth = this.canvasRef.current.offsetWidth;
+    const canvasHeight = this.canvasRef.current.offsetHeight;
+    const canvasOffsetLeft = this.canvasRef.current.offsetLeft;
+    const canvasOffsetTop = this.canvasRef.current.offsetTop;
 
-    document.addEventListener("mouseup", () => {
+    const mouseUpHandler = function () {
       pressing = false;
-    });
+    };
 
-    document.addEventListener("mousemove", (event) => {
+    const mouseMoveHandler = function (event) {
       if (pressing) {
-        deltaPosX = event.clientX - posX;
-        deltaPosY = event.clientY - posY;
-        posX = event.clientX;
-        posY = event.clientY;
-
-        const canvasWidth = this.canvasRef.current.offsetWidth;
-        const canvasHeight = this.canvasRef.current.offsetHeight;
-        const canvasOffsetLeft = this.canvasRef.current.offsetLeft;
-        const canvasOffsetTop = this.canvasRef.current.offsetTop;
+        deltaPosX =
+          event.clientX !== undefined
+            ? event.clientX - posX
+            : event.touches[0].clientX - posX;
+        deltaPosY =
+          event.clientY !== undefined
+            ? event.clientY - posY
+            : event.touches[0].clientY - posY;
+        posX =
+          event.clientX !== undefined
+            ? event.clientX
+            : event.touches[0].clientX;
+        posY =
+          event.clientY !== undefined
+            ? event.clientY
+            : event.touches[0].clientY;
 
         focusBox.style.top =
           canvasOffsetTop > focusBox.offsetTop + deltaPosY ||
@@ -100,22 +118,39 @@ export class Cropper extends Component {
             ? canvasOffsetLeft + canvasWidth
             : focusBox.offsetLeft + deltaPosX + "px";
       }
+    };
+
+    document.addEventListener("mouseup", mouseUpHandler);
+    document.addEventListener("mousemove", (event) => {
+      mouseMoveHandler(event);
     });
   };
 
   resizeCropBox = (event) => {
+    console.log("resizeCropBox");
     event.preventDefault();
     event.stopPropagation();
     const focusPoint = event.target;
     const focusBox = document.querySelector(".focus-box");
     let pressing = true;
-    let posX = event.clientX;
-    let posY = event.clientY;
+    let posX =
+      event.clientX !== undefined ? event.clientX : event.touches[0].clientX;
+    let posY =
+      event.clientY !== undefined ? event.clientY : event.touches[0].clientY;
     let deltaPosX;
     let deltaPosY;
+    const setState = this.setState.bind(this);
 
     const canvasRef = this.canvasRef.current;
-    document.addEventListener("mouseup", () => {
+
+    const canvasWidth = this.canvasRef.current.offsetWidth;
+    const canvasHeight = this.canvasRef.current.offsetHeight;
+    const canvasOffsetLeft = this.canvasRef.current.offsetLeft;
+    const canvasOffsetTop = this.canvasRef.current.offsetTop;
+
+    const mouseUpHandler = function () {
+      console.log("mouseUpHandler");
+      // console.log(focusBox.offsetLeft)
       pressing = false;
       const cropSpecs = {
         x: focusBox.offsetLeft - canvasRef.offsetLeft,
@@ -124,20 +159,34 @@ export class Cropper extends Component {
         height: focusBox.offsetHeight,
       };
       // console.log(cropSpecs)
-      this.setState({ cropSpecs: cropSpecs });
-    });
+      setState({ cropSpecs: cropSpecs });
+    };
 
-    document.addEventListener("mousemove", (event) => {
+    const mouseMoveHandler = function (event) {
+      // console.log('mouseMoveHandler')
+      // console.log('after event listener pressing',pressing)
       if (pressing) {
-        deltaPosX = event.clientX - posX;
-        deltaPosY = event.clientY - posY;
-        posX = event.clientX;
-        posY = event.clientY;
-
-        const canvasWidth = this.canvasRef.current.offsetWidth;
-        const canvasHeight = this.canvasRef.current.offsetHeight;
-        const canvasOffsetLeft = this.canvasRef.current.offsetLeft;
-        const canvasOffsetTop = this.canvasRef.current.offsetTop;
+        deltaPosX =
+          event.clientX !== undefined
+            ? event.clientX - posX
+            : event.touches[0].clientX - posX;
+        deltaPosY =
+          event.clientY !== undefined
+            ? event.clientY - posY
+            : event.touches[0].clientY - posY;
+        posX =
+          event.clientX !== undefined
+            ? event.clientX
+            : event.touches[0].clientX;
+        posY =
+          event.clientY !== undefined
+            ? event.clientY
+            : event.touches[0].clientY;
+        // console.log('posX',posX)
+        // const canvasWidth = this.canvasRef.current.offsetWidth;
+        // const canvasHeight = this.canvasRef.current.offsetHeight;
+        // const canvasOffsetLeft = this.canvasRef.current.offsetLeft;
+        // const canvasOffsetTop = this.canvasRef.current.offsetTop;
 
         switch (focusPoint.classList[1]) {
           case "point-ne":
@@ -185,15 +234,23 @@ export class Cropper extends Component {
               focusBox.offsetWidth + deltaPosX > canvasWidth
                 ? canvasWidth
                 : focusBox.offsetWidth + deltaPosX + "px";
+
             focusBox.style.height =
               focusBox.offsetHeight - deltaPosY > canvasHeight
                 ? canvasHeight
                 : focusBox.offsetHeight - deltaPosY + "px";
+
             focusBox.style.top =
               canvasOffsetTop > focusBox.offsetTop + deltaPosY ||
               canvasOffsetTop + canvasHeight < focusBox.offsetTop + deltaPosY
                 ? canvasOffsetTop + canvasHeight
                 : focusBox.offsetTop + deltaPosY + "px";
+
+            // focusBox.style.left =
+            //   canvasOffsetLeft > focusBox.offsetLeft + deltaPosX ||
+            //   focusBox.offsetLeft + deltaPosX > canvasOffsetLeft + canvasWidth
+            //     ? canvasOffsetLeft
+            //     : focusBox.offsetLeft + deltaPosX + "px";
 
             break;
 
@@ -211,6 +268,16 @@ export class Cropper extends Component {
             throw "Focus point not recognised.";
         }
       }
+    };
+
+    document.addEventListener("mouseup", mouseUpHandler);
+    document.addEventListener("touchend", mouseUpHandler);
+    console.log("before event listener pressing", pressing);
+    document.addEventListener("mousemove", (event) => {
+      mouseMoveHandler(event);
+    });
+    document.addEventListener("touchmove", (event) => {
+      mouseMoveHandler(event);
     });
   };
   applyCrop = () => {
@@ -218,46 +285,54 @@ export class Cropper extends Component {
     const canvas = this.canvasRef.current;
     const ctx = canvas.getContext("2d");
     const cropSpecs = this.state.cropSpecs;
-
     const image = new Image();
+    const imgRotation = this.state.imgRotation;
     image.onload = function () {
       console.log("heeeey");
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.save();
+      ctx.translate(canvas.width / 2, canvas.height / 2);
+      ctx.rotate((imgRotation * Math.PI) / 180);
       ctx.drawImage(
         image,
         cropSpecs.x * 10,
         cropSpecs.y * 10,
         cropSpecs.width * 10,
         cropSpecs.height * 10,
-        0,
-        0,
-        cropSpecs.width * canvas.width / canvas.height,
-        cropSpecs.height * canvas.width / canvas.height
+        -canvas.width / 2,
+        -canvas.height / 2,
+        (cropSpecs.width * canvas.width) / canvas.height,
+        (cropSpecs.height * canvas.width) / canvas.height
       );
+      ctx.restore();
     };
     // console.log(this.props.src)
+
     image.src = this.props.src;
+    this.setFocusPoints(canvas.width, canvas.height);
   };
 
   downloadCrop = () => {
-    console.log("applyCrop");
-    // const canvas = this.canvasRef.current;
+    console.log("download");
     const canvas = document.createElement("canvas");
-
     const ctx = canvas.getContext("2d");
     const cropSpecs = this.state.cropSpecs;
     canvas.width = cropSpecs.width * 10;
     canvas.height = cropSpecs.height * 10;
     const image = new Image();
+    const imgRotation = this.state.imgRotation;
+
     image.onload = function () {
+      ctx.translate(canvas.width / 2, canvas.height / 2);
+      ctx.rotate((imgRotation * Math.PI) / 180);
       ctx.drawImage(
         image,
         cropSpecs.x * 10,
         cropSpecs.y * 10,
         cropSpecs.width * 10,
         cropSpecs.height * 10,
-        0,
-        0,
+        -canvas.width / 2,
+        -canvas.height / 2,
         cropSpecs.width * 10,
         cropSpecs.height * 10
       );
@@ -272,41 +347,37 @@ export class Cropper extends Component {
   };
 
   rotationHandler = (event) => {
-    console.log(event.target.value);
-    const rotationDeg = event.target.value
+    // console.log(event.target.value);
+    const rotationDeg = event.target.value;
+    console.log(rotationDeg);
     const canvas = this.canvasRef.current;
 
     const ctx = canvas.getContext("2d");
-    const cropSpecs = this.state.cropSpecs;
-    canvas.width = cropSpecs.width * 10;
-    canvas.height = cropSpecs.height * 10;
     const image = new Image();
     image.onload = function () {
-      console.log("heeeey");
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.save();
+      ctx.clearRect(-1, -1, canvas.width + 3, canvas.height + 3);
+      // console.log("rotating");
+      ctx.translate(canvas.width / 2, canvas.height / 2);
+      ctx.rotate((rotationDeg * Math.PI) / 180);
+
       ctx.drawImage(
         image,
-        cropSpecs.x * 10,
-        cropSpecs.y * 10,
-        cropSpecs.width * 10,
-        cropSpecs.height * 10,
         0,
         0,
-        cropSpecs.width * 10,
-        cropSpecs.height * 10
+        this.width,
+        this.height,
+        -canvas.width / 2,
+        -canvas.height / 2,
+        this.width / 10,
+        this.height / 10
       );
-      const exportImg = canvas.toDataURL("image/png");
-      const link = document.createElement("a");
-      link.download = "filename.png";
-      link.href = exportImg;
-      link.click();
+      ctx.restore();
     };
-    // console.log(this.props.src)
     image.src = this.props.src;
     this.setState({ imgRotation: rotationDeg });
   };
 
-  
   render() {
     return (
       <Fragment>
@@ -318,10 +389,16 @@ export class Cropper extends Component {
                 onMouseDown={(e) => {
                   this.dragCropBox(e);
                 }}
+                onTouchStart={(e) => {
+                  this.dragCropBox(e);
+                }}
               >
                 <div
                   className="focus-point point-ne"
                   onMouseDown={(e) => {
+                    this.resizeCropBox(e);
+                  }}
+                  onTouchStart={(e) => {
                     this.resizeCropBox(e);
                   }}
                 ></div>
@@ -330,16 +407,25 @@ export class Cropper extends Component {
                   onMouseDown={(e) => {
                     this.resizeCropBox(e);
                   }}
+                  onTouchStart={(e) => {
+                    this.resizeCropBox(e);
+                  }}
                 ></div>
                 <div
                   className="focus-point point-se"
                   onMouseDown={(e) => {
                     this.resizeCropBox(e);
                   }}
+                  onTouchStart={(e) => {
+                    this.resizeCropBox(e);
+                  }}
                 ></div>
                 <div
                   className="focus-point point-sw"
                   onMouseDown={(e) => {
+                    this.resizeCropBox(e);
+                  }}
+                  onTouchStart={(e) => {
                     this.resizeCropBox(e);
                   }}
                 ></div>
@@ -360,12 +446,13 @@ export class Cropper extends Component {
               <button onClick={this.downloadCrop}>Download</button>
               <button onClick={this.applyCrop}>Apply</button>
               <input
-              className="slider"
+                className="slider"
                 type="range"
-                min={0}
-                max={100}
-                value={this.state.value}
-                onChange={this.handleChangee}
+                min={-20}
+                max={20}
+                // step={0.1}
+                value={this.state.imgRotation}
+                onChange={this.rotationHandler}
               />
             </div>
           </Backdrop>
