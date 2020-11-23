@@ -13,6 +13,7 @@
   margin: 0 auto 0 20vw;
   /* width: 500px;
   height: 500px; */
+  border: 1px solid greenyellow;
 }
 .crop-box button {
     position: relative;

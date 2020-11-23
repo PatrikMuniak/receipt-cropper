@@ -213,11 +213,68 @@ export class Cropper extends Component {
       }
     });
   };
-
   applyCrop = () => {
+    console.log("applyCrop");
+    const canvas = this.canvasRef.current;
+    const ctx = canvas.getContext("2d");
+    const cropSpecs = this.state.cropSpecs;
+
+    const image = new Image();
+    image.onload = function () {
+      console.log("heeeey");
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(
+        image,
+        cropSpecs.x * 10,
+        cropSpecs.y * 10,
+        cropSpecs.width * 10,
+        cropSpecs.height * 10,
+        0,
+        0,
+        cropSpecs.width * canvas.width / canvas.height,
+        cropSpecs.height * canvas.width / canvas.height
+      );
+    };
+    // console.log(this.props.src)
+    image.src = this.props.src;
+  };
+
+  downloadCrop = () => {
     console.log("applyCrop");
     // const canvas = this.canvasRef.current;
     const canvas = document.createElement("canvas");
+
+    const ctx = canvas.getContext("2d");
+    const cropSpecs = this.state.cropSpecs;
+    canvas.width = cropSpecs.width * 10;
+    canvas.height = cropSpecs.height * 10;
+    const image = new Image();
+    image.onload = function () {
+      ctx.drawImage(
+        image,
+        cropSpecs.x * 10,
+        cropSpecs.y * 10,
+        cropSpecs.width * 10,
+        cropSpecs.height * 10,
+        0,
+        0,
+        cropSpecs.width * 10,
+        cropSpecs.height * 10
+      );
+      const exportImg = canvas.toDataURL("image/png");
+      const link = document.createElement("a");
+      link.download = "filename.png";
+      link.href = exportImg;
+      link.click();
+    };
+    // console.log(this.props.src)
+    image.src = this.props.src;
+  };
+
+  rotationHandler = (event) => {
+    console.log(event.target.value);
+    const rotationDeg = event.target.value
+    const canvas = this.canvasRef.current;
 
     const ctx = canvas.getContext("2d");
     const cropSpecs = this.state.cropSpecs;
@@ -246,30 +303,10 @@ export class Cropper extends Component {
     };
     // console.log(this.props.src)
     image.src = this.props.src;
+    this.setState({ imgRotation: rotationDeg });
   };
 
-  rotationHandler = (event) => {
-    console.log("pre", event.target.value);
-    // event.target.value = event.target.value
-    // console.log('after',event.target.value);
-
-    // const toggle = event.target;
-    // let posX = event.clientX;
-
-    // toggle.addEventListener("mousemove", () => {
-    //   const newPosX = event.clientX - posX;
-    //   this.setState({imgRotation: this.state.imgRotation})
-    //   posX = event.clientX;
-
-    // });
-    this.setState({ imgRotation: event.target.value });
-  };
-
-  handleChangee = (e) => {
-    console.log(e.target.value);
-
-    this.setState({ value: e.target.value });
-  };
+  
   render() {
     return (
       <Fragment>
@@ -320,6 +357,7 @@ export class Cropper extends Component {
               >
                 Clear
               </button>
+              <button onClick={this.downloadCrop}>Download</button>
               <button onClick={this.applyCrop}>Apply</button>
               <input
               className="slider"
