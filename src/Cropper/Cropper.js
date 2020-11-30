@@ -67,7 +67,9 @@ export class Cropper extends Component {
   // };
 
   dragCropBox = (event) => {
-    event.preventDefault();
+    if (event.clientX !== undefined) {
+      event.preventDefault();
+    }
     const focusBox = document.querySelector(".focus-box");
     let pressing = true;
     let posX =
@@ -124,10 +126,17 @@ export class Cropper extends Component {
     document.addEventListener("mousemove", (event) => {
       mouseMoveHandler(event);
     });
+    document.addEventListener("touchend", mouseUpHandler);
+    document.addEventListener("touchmove", (event) => {
+      mouseMoveHandler(event);
+    });
   };
 
   resizeCropBox = (event) => {
-    event.preventDefault();
+    if (event.clientX !== undefined) {
+      event.preventDefault();
+    }
+
     event.stopPropagation();
     const focusPoint = event.target;
     const focusBox = document.querySelector(".focus-box");
