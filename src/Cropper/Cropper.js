@@ -23,7 +23,7 @@ export class Cropper extends Component {
         const height = this.height / 10;
         canvas.width = width;
         canvas.height = height;
-        setFocusPoints(canvas.width, canvas.height);
+        setFocusPoints(canvas);
         ctx.drawImage(
           image,
           0,
@@ -42,13 +42,13 @@ export class Cropper extends Component {
     }
   };
 
-  setFocusPoints = (width, height) => {
+  setFocusPoints = (canvas) => {
     const focusBox = document.querySelector(".focus-box");
 
-    focusBox.style.top = "0px";
-    focusBox.style.width = width + "px";
-    focusBox.style.height = height + "px";
-    focusBox.style.left = "20vw";
+    focusBox.style.top = canvas.offsetTop + "px";
+    focusBox.style.width = canvas.width + "px";
+    focusBox.style.height = canvas.height + "px";
+    focusBox.style.left = canvas.offsetLeft + "px";
   };
   // getCoordinates = (event) => {
   //   let x = event.clientX;
@@ -127,7 +127,6 @@ export class Cropper extends Component {
   };
 
   resizeCropBox = (event) => {
-    console.log("resizeCropBox");
     event.preventDefault();
     event.stopPropagation();
     const focusPoint = event.target;
@@ -149,8 +148,6 @@ export class Cropper extends Component {
     const canvasOffsetTop = this.canvasRef.current.offsetTop;
 
     const mouseUpHandler = function () {
-      console.log("mouseUpHandler");
-      // console.log(focusBox.offsetLeft)
       pressing = false;
       const cropSpecs = {
         x: focusBox.offsetLeft - canvasRef.offsetLeft,
@@ -158,13 +155,11 @@ export class Cropper extends Component {
         width: focusBox.offsetWidth,
         height: focusBox.offsetHeight,
       };
-      // console.log(cropSpecs)
+
       setState({ cropSpecs: cropSpecs });
     };
 
     const mouseMoveHandler = function (event) {
-      // console.log('mouseMoveHandler')
-      // console.log('after event listener pressing',pressing)
       if (pressing) {
         deltaPosX =
           event.clientX !== undefined
@@ -182,97 +177,111 @@ export class Cropper extends Component {
           event.clientY !== undefined
             ? event.clientY
             : event.touches[0].clientY;
-        // console.log('posX',posX)
-        // const canvasWidth = this.canvasRef.current.offsetWidth;
-        // const canvasHeight = this.canvasRef.current.offsetHeight;
-        // const canvasOffsetLeft = this.canvasRef.current.offsetLeft;
-        // const canvasOffsetTop = this.canvasRef.current.offsetTop;
 
         switch (focusPoint.classList[1]) {
-          case "point-ne":
-            focusBox.style.width =
-              focusBox.offsetWidth - deltaPosX > canvasWidth
-                ? canvasWidth
-                : focusBox.offsetWidth - deltaPosX + "px";
-            focusBox.style.height =
-              focusBox.offsetHeight - deltaPosY > canvasHeight
-                ? canvasHeight
-                : focusBox.offsetHeight - deltaPosY + "px";
-
-            focusBox.style.left =
-              canvasOffsetLeft > focusBox.offsetLeft + deltaPosX ||
-              focusBox.offsetLeft + deltaPosX > canvasOffsetLeft + canvasWidth
-                ? canvasOffsetLeft
-                : focusBox.offsetLeft + deltaPosX + "px";
-
-            focusBox.style.top =
-              canvasOffsetTop > focusBox.offsetTop + deltaPosY ||
-              canvasOffsetTop + canvasHeight < focusBox.offsetTop + deltaPosY
-                ? canvasOffsetTop + canvasHeight
-                : focusBox.offsetTop + deltaPosY + "px";
-            break;
-
-          case "point-se":
-            focusBox.style.width =
-              focusBox.offsetWidth - deltaPosX > canvasWidth
-                ? canvasWidth
-                : focusBox.offsetWidth - deltaPosX + "px";
-            focusBox.style.height =
-              focusBox.offsetHeight + deltaPosY > canvasHeight
-                ? canvasHeight
-                : focusBox.offsetHeight + deltaPosY + "px";
-            focusBox.style.left =
-              canvasOffsetLeft > focusBox.offsetLeft + deltaPosX ||
-              focusBox.offsetLeft + deltaPosX > canvasOffsetLeft + canvasWidth
-                ? canvasOffsetLeft
-                : focusBox.offsetLeft + deltaPosX + "px";
-
-            break;
-
           case "point-nw":
             focusBox.style.width =
-              focusBox.offsetWidth + deltaPosX > canvasWidth
+              focusBox.offsetWidth - deltaPosX > canvasWidth
                 ? canvasWidth
-                : focusBox.offsetWidth + deltaPosX + "px";
-
+                : focusBox.offsetWidth - deltaPosX + "px";
             focusBox.style.height =
               focusBox.offsetHeight - deltaPosY > canvasHeight
                 ? canvasHeight
                 : focusBox.offsetHeight - deltaPosY + "px";
+
+            focusBox.style.left =
+              canvasOffsetLeft > focusBox.offsetLeft + deltaPosX ||
+              focusBox.offsetLeft + deltaPosX > canvasOffsetLeft + canvasWidth
+                ? canvasOffsetLeft
+                : focusBox.offsetLeft + deltaPosX + "px";
 
             focusBox.style.top =
               canvasOffsetTop > focusBox.offsetTop + deltaPosY ||
               canvasOffsetTop + canvasHeight < focusBox.offsetTop + deltaPosY
                 ? canvasOffsetTop + canvasHeight
                 : focusBox.offsetTop + deltaPosY + "px";
-
-            // focusBox.style.left =
-            //   canvasOffsetLeft > focusBox.offsetLeft + deltaPosX ||
-            //   focusBox.offsetLeft + deltaPosX > canvasOffsetLeft + canvasWidth
-            //     ? canvasOffsetLeft
-            //     : focusBox.offsetLeft + deltaPosX + "px";
-
             break;
 
           case "point-sw":
             focusBox.style.width =
-              focusBox.offsetWidth + deltaPosX > canvasWidth
+              focusBox.offsetWidth - deltaPosX > canvasWidth
                 ? canvasWidth
-                : focusBox.offsetWidth + deltaPosX + "px";
+                : focusBox.offsetWidth - deltaPosX + "px";
+
             focusBox.style.height =
               focusBox.offsetHeight + deltaPosY > canvasHeight
                 ? canvasHeight
                 : focusBox.offsetHeight + deltaPosY + "px";
+
+            focusBox.style.left =
+              canvasOffsetLeft > focusBox.offsetLeft + deltaPosX ||
+              focusBox.offsetLeft + deltaPosX > canvasOffsetLeft + canvasWidth
+                ? canvasOffsetLeft
+                : focusBox.offsetLeft + deltaPosX + "px";
+
+            break;
+
+          case "point-ne":
+            focusBox.style.width =
+              focusBox.offsetWidth + deltaPosX > canvasWidth
+                ? canvasWidth
+                : focusBox.offsetWidth + deltaPosX + "px";
+
+            focusBox.style.height =
+              focusBox.offsetHeight - deltaPosY > canvasHeight
+                ? canvasHeight
+                : focusBox.offsetHeight - deltaPosY + "px";
+
+            focusBox.style.top =
+              canvasOffsetTop > focusBox.offsetTop + deltaPosY ||
+              canvasOffsetTop + canvasHeight < focusBox.offsetTop + deltaPosY
+                ? canvasOffsetTop + canvasHeight
+                : focusBox.offsetTop + deltaPosY + "px";
+
+            break;
+
+          case "point-se":
+            if (
+              focusBox.offsetWidth + focusBox.offsetLeft + deltaPosX <
+              canvasWidth + canvasOffsetLeft
+            ) {
+              focusBox.style.width = focusBox.offsetWidth + deltaPosX + "px";
+              // focusBox.offsetWidth + deltaPosX > canvasWidth
+              //   ? canvasWidth
+              //   : focusBox.offsetWidth + deltaPosX + "px";
+            }
+            if (
+              focusBox.offsetHeight + focusBox.offsetTop + deltaPosY <
+              canvasHeight + canvasOffsetTop
+            ) {
+              focusBox.style.height = focusBox.offsetHeight + deltaPosY + "px";
+              // focusBox.offsetHeight + deltaPosY > canvasHeight
+              //   ? canvasHeight
+              //   : focusBox.offsetHeight + deltaPosY + "px";
+            }
             break;
           default:
             throw "Focus point not recognised.";
+        }
+        if (
+          focusBox.offsetWidth + focusBox.offsetLeft >
+          canvasWidth + canvasOffsetLeft
+        ) {
+          focusBox.style.height = canvasHeight + "px";
+        }
+
+        if (
+          focusBox.offsetHeight + focusBox.offsetTop >
+          canvasHeight + canvasOffsetTop
+        ) {
+          focusBox.style.height = canvasHeight + "px";
         }
       }
     };
 
     document.addEventListener("mouseup", mouseUpHandler);
     document.addEventListener("touchend", mouseUpHandler);
-    console.log("before event listener pressing", pressing);
+
     document.addEventListener("mousemove", (event) => {
       mouseMoveHandler(event);
     });
@@ -281,14 +290,12 @@ export class Cropper extends Component {
     });
   };
   applyCrop = () => {
-    console.log("applyCrop");
     const canvas = this.canvasRef.current;
     const ctx = canvas.getContext("2d");
     const cropSpecs = this.state.cropSpecs;
     const image = new Image();
     const imgRotation = this.state.imgRotation;
     image.onload = function () {
-      console.log("heeeey");
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.save();
       ctx.translate(canvas.width / 2, canvas.height / 2);
@@ -306,14 +313,12 @@ export class Cropper extends Component {
       );
       ctx.restore();
     };
-    // console.log(this.props.src)
 
     image.src = this.props.src;
     this.setFocusPoints(canvas.width, canvas.height);
   };
 
   downloadCrop = () => {
-    console.log("download");
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
     const cropSpecs = this.state.cropSpecs;
@@ -323,13 +328,12 @@ export class Cropper extends Component {
     const imgRotation = this.state.imgRotation;
 
     image.onload = function () {
-      ctx.rect(0, 0, canvas.width, canvas.height)
-      ctx.fillStyle = 'white';
+      ctx.rect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "white";
       ctx.fill();
       ctx.translate(canvas.width / 2, canvas.height / 2);
       ctx.rotate((imgRotation * Math.PI) / 180);
-      
-      
+
       ctx.drawImage(
         image,
         cropSpecs.x * 10,
@@ -347,14 +351,12 @@ export class Cropper extends Component {
       link.href = exportImg;
       link.click();
     };
-    // console.log(this.props.src)
+
     image.src = this.props.src;
   };
 
   rotationHandler = (event) => {
-    // console.log(event.target.value);
     const rotationDeg = event.target.value;
-    console.log(rotationDeg);
     const canvas = this.canvasRef.current;
 
     const ctx = canvas.getContext("2d");
@@ -362,7 +364,7 @@ export class Cropper extends Component {
     image.onload = function () {
       ctx.save();
       ctx.clearRect(-1, -1, canvas.width + 3, canvas.height + 3);
-      // console.log("rotating");
+
       ctx.translate(canvas.width / 2, canvas.height / 2);
       ctx.rotate((rotationDeg * Math.PI) / 180);
 

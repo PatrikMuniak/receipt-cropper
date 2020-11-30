@@ -10,7 +10,7 @@
 }
 
 .crop-box canvas {
-  margin: 0 auto 0 20vw;
+  margin: 2vh auto 0 20vw;
   /* width: 500px;
   height: 500px; */
   border: 1px solid greenyellow;
@@ -36,26 +36,26 @@
   z-index: 6;
 }
 
-.point-ne {
+.point-nw {
   position: absolute;
   top: -5px;
   left: -5px;
 
 }
 
-.point-nw {
+.point-ne {
   position: absolute;
   right: -5px;
   top: -5px;
 }
 
-.point-sw {
+.point-se {
   position: absolute;
   right: -5px;
   bottom: -5px;
 }
 
-.point-se {
+.point-sw {
   position: absolute;
   left: -5px;
   bottom: -5px;
