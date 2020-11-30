@@ -323,8 +323,13 @@ export class Cropper extends Component {
     const imgRotation = this.state.imgRotation;
 
     image.onload = function () {
+      ctx.rect(0, 0, canvas.width, canvas.height)
+      ctx.fillStyle = 'white';
+      ctx.fill();
       ctx.translate(canvas.width / 2, canvas.height / 2);
       ctx.rotate((imgRotation * Math.PI) / 180);
+      
+      
       ctx.drawImage(
         image,
         cropSpecs.x * 10,
