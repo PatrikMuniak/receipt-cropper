@@ -30,43 +30,24 @@ export class Cropper extends Component {
     }) 
   }
 
-  // componentWillUnmount() {
-  //   console.log('component will unmount')
-  //   const focusBox = document.querySelector(".focus-box");
-  //   focusBox.removeEventListener("touchstart", this.dragCropBox);
+  componentWillUnmount() {
+    console.log('component will unmount')
+    const focusBox = document.querySelector(".focus-box");
+    focusBox.removeEventListener("touchstart", this.dragCropBox);
 
-  //   const focusPoints = document.querySelectorAll(".focus-point");
+    const focusPoints = document.querySelectorAll(".focus-point");
 
-  //   focusPoints.forEach((point)=>{
-  //     point.RemoveEventListener(
-  //       "touchstart",
-  //         this.resizeCropBox
-  //     );
-  //   }) 
-  // }
+    focusPoints.forEach((point)=>{
+      point.RemoveEventListener(
+        "touchstart",
+          this.resizeCropBox
+      );
+    }) 
+  }
 
   componentDidUpdate = (prevProps) => {
 
     if (!this.props.src) return;
-
-    // document.querySelector(".focus-box").addEventListener(
-    //   "touchstart",
-    //   (e) => {
-    //     this.dragCropBox(e);
-    //   },
-    //   { passive: false }
-    // );
-    // const focusPoints = document.querySelectorAll(".focus-point");
-
-    // focusPoints.forEach((point)=>{
-    //   point.addEventListener(
-    //     "touchstart",
-    //     (e) => {
-    //       this.resizeCropBox(e);
-    //     },
-    //     { passive: false }
-    //   );
-    // }) 
 
     if (this.props.src !== prevProps.src) {
       const canvas = this.canvasRef.current;
@@ -175,8 +156,6 @@ export class Cropper extends Component {
   };
 
   resizeCropBox = (event) => {
-    // console.log("resizeCropBox");
-    // console.log(event.target.classList)
     if (event.cancelable) {
     event.preventDefault();
     }
@@ -448,45 +427,30 @@ export class Cropper extends Component {
                 onMouseDown={(e) => {
                   this.dragCropBox(e);
                 }}
-                // onTouchStart={(e) => {
-                //   this.dragCropBox(e);
-                // }}
               >
                 <div
                   className="focus-point point-ne"
                   onMouseDown={(e) => {
                     this.resizeCropBox(e);
                   }}
-                  // onTouchStart={(e) => {
-                  //   this.resizeCropBox(e);
-                  // }}
                 ></div>
                 <div
                   className="focus-point point-nw"
                   onMouseDown={(e) => {
                     this.resizeCropBox(e);
                   }}
-                  // onTouchStart={(e) => {
-                  //   this.resizeCropBox(e);
-                  // }}
                 ></div>
                 <div
                   className="focus-point point-se"
                   onMouseDown={(e) => {
                     this.resizeCropBox(e);
                   }}
-                  // onTouchStart={(e) => {
-                  //   this.resizeCropBox(e);
-                  // }}
                 ></div>
                 <div
                   className="focus-point point-sw"
                   onMouseDown={(e) => {
                     this.resizeCropBox(e);
                   }}
-                  // onTouchStart={(e) => {
-                  //   this.resizeCropBox(e);
-                  // }}
                 ></div>
               </div>
 
@@ -509,7 +473,6 @@ export class Cropper extends Component {
                 type="range"
                 min={-20}
                 max={20}
-                // step={0.1}
                 value={this.state.imgRotation}
                 onChange={this.rotationHandler}
               />
