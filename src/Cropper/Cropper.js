@@ -9,8 +9,64 @@ export class Cropper extends Component {
   };
   canvasRef = React.createRef();
 
+  componentDidMount() {
+      document.querySelector(".focus-box").addEventListener(
+      "touchstart",
+      (e) => {
+        this.dragCropBox(e);
+      },
+      { passive: false }
+    );
+    const focusPoints = document.querySelectorAll(".focus-point");
+
+    focusPoints.forEach((point)=>{
+      point.addEventListener(
+        "touchstart",
+        (e) => {
+          this.resizeCropBox(e);
+        },
+        { passive: false }
+      );
+    }) 
+  }
+
+  // componentWillUnmount() {
+  //   console.log('component will unmount')
+  //   const focusBox = document.querySelector(".focus-box");
+  //   focusBox.removeEventListener("touchstart", this.dragCropBox);
+
+  //   const focusPoints = document.querySelectorAll(".focus-point");
+
+  //   focusPoints.forEach((point)=>{
+  //     point.RemoveEventListener(
+  //       "touchstart",
+  //         this.resizeCropBox
+  //     );
+  //   }) 
+  // }
+
   componentDidUpdate = (prevProps) => {
+
     if (!this.props.src) return;
+
+    // document.querySelector(".focus-box").addEventListener(
+    //   "touchstart",
+    //   (e) => {
+    //     this.dragCropBox(e);
+    //   },
+    //   { passive: false }
+    // );
+    // const focusPoints = document.querySelectorAll(".focus-point");
+
+    // focusPoints.forEach((point)=>{
+    //   point.addEventListener(
+    //     "touchstart",
+    //     (e) => {
+    //       this.resizeCropBox(e);
+    //     },
+    //     { passive: false }
+    //   );
+    // }) 
 
     if (this.props.src !== prevProps.src) {
       const canvas = this.canvasRef.current;
@@ -50,26 +106,12 @@ export class Cropper extends Component {
     focusBox.style.height = canvas.height + "px";
     focusBox.style.left = canvas.offsetLeft + "px";
   };
-  // getCoordinates = (event) => {
-  //   let x = event.clientX;
-  //   let y = event.clientY;
-  //   const domRect = this.canvasRef.current.getBoundingClientRect();
-
-  //   // bottom: 457.7593765258789
-  //   // height: 412
-  //   // left: 193.84375
-  //   // right: 502.84375
-  //   // top: 45.759376525878906
-  //   // width: 309
-  //   // x: 193.84375
-  //   // y: 45.759376525878906
-  //   const coordinate = { x: x - domRect.x, y: y - domRect.y };
-  // };
 
   dragCropBox = (event) => {
-    if (event.clientX !== undefined) {
+    if (event.cancelable) {
       event.preventDefault();
-    }
+      }
+
     const focusBox = document.querySelector(".focus-box");
     let pressing = true;
     let posX =
@@ -126,15 +168,17 @@ export class Cropper extends Component {
     document.addEventListener("mousemove", (event) => {
       mouseMoveHandler(event);
     });
-    document.addEventListener("touchend", mouseUpHandler);
-    document.addEventListener("touchmove", (event) => {
+    event.target.addEventListener("touchend", mouseUpHandler);
+    event.target.addEventListener("touchmove", (event) => {
       mouseMoveHandler(event);
     });
   };
 
   resizeCropBox = (event) => {
-    if (event.clientX !== undefined) {
-      event.preventDefault();
+    // console.log("resizeCropBox");
+    // console.log(event.target.classList)
+    if (event.cancelable) {
+    event.preventDefault();
     }
 
     event.stopPropagation();
@@ -147,6 +191,7 @@ export class Cropper extends Component {
       event.clientY !== undefined ? event.clientY : event.touches[0].clientY;
     let deltaPosX;
     let deltaPosY;
+    
     const setState = this.setState.bind(this);
 
     const canvasRef = this.canvasRef.current;
@@ -187,8 +232,11 @@ export class Cropper extends Component {
             ? event.clientY
             : event.touches[0].clientY;
 
+
         switch (focusPoint.classList[1]) {
           case "point-nw":
+
+
             focusBox.style.width =
               focusBox.offsetWidth - deltaPosX > canvasWidth
                 ? canvasWidth
@@ -250,24 +298,18 @@ export class Cropper extends Component {
             break;
 
           case "point-se":
-            if (
-              focusBox.offsetWidth + focusBox.offsetLeft + deltaPosX <
-              canvasWidth + canvasOffsetLeft
-            ) {
-              focusBox.style.width = focusBox.offsetWidth + deltaPosX + "px";
-              // focusBox.offsetWidth + deltaPosX > canvasWidth
-              //   ? canvasWidth
-              //   : focusBox.offsetWidth + deltaPosX + "px";
-            }
-            if (
-              focusBox.offsetHeight + focusBox.offsetTop + deltaPosY <
-              canvasHeight + canvasOffsetTop
-            ) {
-              focusBox.style.height = focusBox.offsetHeight + deltaPosY + "px";
-              // focusBox.offsetHeight + deltaPosY > canvasHeight
-              //   ? canvasHeight
-              //   : focusBox.offsetHeight + deltaPosY + "px";
-            }
+            
+              focusBox.style.width = 
+              focusBox.offsetWidth + deltaPosX > canvasWidth
+                ? canvasWidth
+                : focusBox.offsetWidth + deltaPosX + "px";
+            
+            
+              focusBox.style.height = 
+              focusBox.offsetHeight + deltaPosY > canvasHeight
+                ? canvasHeight
+                : focusBox.offsetHeight + deltaPosY + "px";
+            
             break;
           default:
             throw "Focus point not recognised.";
@@ -276,7 +318,7 @@ export class Cropper extends Component {
           focusBox.offsetWidth + focusBox.offsetLeft >
           canvasWidth + canvasOffsetLeft
         ) {
-          focusBox.style.height = canvasHeight + "px";
+          focusBox.style.width = canvasWidth + "px";
         }
 
         if (
@@ -284,17 +326,18 @@ export class Cropper extends Component {
           canvasHeight + canvasOffsetTop
         ) {
           focusBox.style.height = canvasHeight + "px";
+          focusBox.style.top = canvasOffsetTop + "px";
         }
       }
     };
 
-    document.addEventListener("mouseup", mouseUpHandler);
-    document.addEventListener("touchend", mouseUpHandler);
+    event.target.addEventListener("mouseup", mouseUpHandler);
+    event.target.addEventListener("touchend", mouseUpHandler);
 
-    document.addEventListener("mousemove", (event) => {
+    event.target.addEventListener("mousemove", (event) => {
       mouseMoveHandler(event);
     });
-    document.addEventListener("touchmove", (event) => {
+    event.target.addEventListener("touchmove", (event) => {
       mouseMoveHandler(event);
     });
   };
@@ -397,58 +440,58 @@ export class Cropper extends Component {
   render() {
     return (
       <Fragment>
-        {this.props.src ? (
-          <Backdrop>
+        
+          <Backdrop show={this.props.src ? true : false}>
             <div className="crop-box">
               <div
                 className="focus-box"
                 onMouseDown={(e) => {
                   this.dragCropBox(e);
                 }}
-                onTouchStart={(e) => {
-                  this.dragCropBox(e);
-                }}
+                // onTouchStart={(e) => {
+                //   this.dragCropBox(e);
+                // }}
               >
                 <div
                   className="focus-point point-ne"
                   onMouseDown={(e) => {
                     this.resizeCropBox(e);
                   }}
-                  onTouchStart={(e) => {
-                    this.resizeCropBox(e);
-                  }}
+                  // onTouchStart={(e) => {
+                  //   this.resizeCropBox(e);
+                  // }}
                 ></div>
                 <div
                   className="focus-point point-nw"
                   onMouseDown={(e) => {
                     this.resizeCropBox(e);
                   }}
-                  onTouchStart={(e) => {
-                    this.resizeCropBox(e);
-                  }}
+                  // onTouchStart={(e) => {
+                  //   this.resizeCropBox(e);
+                  // }}
                 ></div>
                 <div
                   className="focus-point point-se"
                   onMouseDown={(e) => {
                     this.resizeCropBox(e);
                   }}
-                  onTouchStart={(e) => {
-                    this.resizeCropBox(e);
-                  }}
+                  // onTouchStart={(e) => {
+                  //   this.resizeCropBox(e);
+                  // }}
                 ></div>
                 <div
                   className="focus-point point-sw"
                   onMouseDown={(e) => {
                     this.resizeCropBox(e);
                   }}
-                  onTouchStart={(e) => {
-                    this.resizeCropBox(e);
-                  }}
+                  // onTouchStart={(e) => {
+                  //   this.resizeCropBox(e);
+                  // }}
                 ></div>
               </div>
 
               <canvas
-                onClick={this.getCoordinates}
+
                 draggable="false"
                 ref={this.canvasRef}
               ></canvas>
@@ -472,7 +515,7 @@ export class Cropper extends Component {
               />
             </div>
           </Backdrop>
-        ) : null}
+        )
       </Fragment>
     );
   }
